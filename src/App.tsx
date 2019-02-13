@@ -38,8 +38,11 @@ class App extends React.Component<{}, IState> {
               screenshotFormat="image/jpeg"
               ref={this.state.refCamera}
             />
+
+            <div className="container">
             <Button className="btn btn-primary btn-action btn-add" id="loginButton" variant ="contained" color="primary" onClick= {this.authenticate}>Test</Button>
             <h1 id="label">Hi</h1>
+            </div>
 
 
         
