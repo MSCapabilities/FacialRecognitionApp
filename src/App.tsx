@@ -139,22 +139,27 @@ class App extends React.Component<{}, IState> {
 				} else {
 					response.json().then((json: any) => {
 						console.log(json.predictions[0])
-						this.setState({recognitionResult: json.predictions[0] })
-						if (this.state.recognitionResult.probability <= 0.8) {
-              // alert("Unrecognised, please try again")
+            this.setState({recognitionResult: json.predictions[0] })
+            if (this.state.recognitionResult.tagName != "Negative"){
+              if (this.state.recognitionResult.probability > 0.8){
+                this.setState({
+                  loading: false,
+                  nameLabel: this.state.recognitionResult.tagName,
+                  openConfirmDlg: true
+                })
+              } else {
+                this.setState({
+                  loading: false,
+                  openFailedDlg: true,
+                })
+              }
+            } else {
               this.setState({
                 loading: false,
                 openFailedDlg: true,
               })
-            } else {
-              this.setState({
-                loading: false,
-                nameLabel: this.state.recognitionResult.tagName,
-                openConfirmDlg: true
-                
-                
-              })
-						}
+            }
+						
 					})
 					
 				}
