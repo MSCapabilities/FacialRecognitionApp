@@ -3,13 +3,22 @@ import './App.css';
 import * as Webcam from "react-webcam";
 import Button from '@material-ui/core/Button';
 
-import logo from './logo.svg';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
+
+
+// import logo from './logo.svg';
 
 
 interface IState{
   recognitionResult: any,
   nameLabel: string,
-  refCamera: any
+  refCamera: any,
+  openConfirmDlg: boolean,
+  openFailedDlg: boolean,
 }
 
 class App extends React.Component<{}, IState> {
@@ -20,18 +29,27 @@ class App extends React.Component<{}, IState> {
       recognitionResult: null,
       nameLabel: "",
       refCamera: React.createRef(),
+      openConfirmDlg: false,
+      openFailedDlg: false,
     }     
   }
+
+  private handleClose = () => {
+    this.setState({ 
+        openConfirmDlg: false,
+        openFailedDlg: false,
+    });
+  };
 
   
   public render() {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          {/* <img src={logo} className="App-logo" alt="logo" /> */}
           <h1 className="App-title">Welcome</h1>
         </header>
-        <div className="container">
+        <div className="container webcam">
 
             <Webcam
               audio={false}
@@ -40,18 +58,49 @@ class App extends React.Component<{}, IState> {
             />
 
             <div className="container">
-            <Button className="btn btn-primary btn-action btn-add" id="loginButton" variant ="contained" color="primary" onClick= {this.authenticate}>Test</Button>
-            <h1 id="label">Hi</h1>
-            </div>
-
-
-        
+            <Button className="btn btn-primary btn-action btn-add" id="loginButton" variant ="contained" color="primary" onClick= {this.authenticate}>Test</Button>            </div>
         
         </div>
+
+          <Dialog className="menu" open={this.state.openConfirmDlg} keepMounted aria-labelledby="alert-dialog-slide-title" aria-describedby="alert-dialog-slide-description">
+              <DialogTitle id="alert-dialog-slide-title">{"Recognition Success!"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-slide-description">     
+                  <div id="bottom-info">
+                    <div className="menu-col">
+                    Hello, {this.state.nameLabel}!
+                      </div>
+                  </div>
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={this.handleClose} color="primary">
+                    CLOSE
+                </Button>
+              </DialogActions>
+          </Dialog>
+
+          <Dialog className="menu" open={this.state.openFailedDlg} keepMounted aria-labelledby="alert-dialog-slide-title" aria-describedby="alert-dialog-slide-description">
+              <DialogTitle id="alert-dialog-slide-title">{"Recognition Failed"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-slide-description">     
+                  <div id="bottom-info">
+                    <div className="menu-col">
+                      <p>Sorry, you have not been recognised.</p>
+                      <p>You may not be in the system.</p>
+                    </div>
+                  </div>
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={this.handleClose} color="primary">
+                    CLOSE
+                </Button>
+              </DialogActions>
+          </Dialog>
       </div>
     );
   }
-
 
 
 
@@ -79,11 +128,20 @@ class App extends React.Component<{}, IState> {
 						console.log(json.predictions[0])
 						this.setState({recognitionResult: json.predictions[0] })
 						if (this.state.recognitionResult.probability <= 0.8) {
-              alert("Unrecognised, please try again")
-						} else {
-              this.updateResult;
-              alert(this.state.recognitionResult.tagName)
+              // alert("Unrecognised, please try again")
+              this.setState({
+                openFailedDlg: true,
+              })
+            } else {
+              // this.updateResult;
+              // alert(this.state.recognitionResult.tagName)
+              
 
+              this.setState({
+                nameLabel: this.state.recognitionResult.tagName,
+                openConfirmDlg: true
+                
+              })
 						}
 					})
 					
@@ -91,17 +149,19 @@ class App extends React.Component<{}, IState> {
 			})
   }
 
-  private updateResult(){
-    var label = document.getElementById("label")!;
-    label.innerHTML= this.state.recognitionResult.tagName;
-    alert("updated")
+  // private updateResult(){
+  //   var label = document.getElementById("label")!;
+  //   label.innerHTML= this.state.recognitionResult.tagName;
+  //   alert("updated")
 
-  }
+  // }
   
   private authenticate =() => {
     const screenshot = this.state.refCamera.current.getScreenshot();
 		this.getFaceRecognitionResult(screenshot);
   }
+
+
   
 
 
