@@ -10,7 +10,7 @@
 .App-header {
   background-color: #222;
   height: 50px;
-  padding: 20px;
+  padding: 10px 20px 0px 20px;
   color: white;
 }
 
@@ -29,4 +29,8 @@
 
 .webcam{
   margin-top: 20px;
+}
+
+.btn-primary{
+  width: 30%;
 }

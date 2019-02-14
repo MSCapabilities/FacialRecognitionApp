@@ -19,6 +19,7 @@ interface IState{
   refCamera: any,
   openConfirmDlg: boolean,
   openFailedDlg: boolean,
+  loading: boolean,
 }
 
 class App extends React.Component<{}, IState> {
@@ -31,6 +32,7 @@ class App extends React.Component<{}, IState> {
       refCamera: React.createRef(),
       openConfirmDlg: false,
       openFailedDlg: false,
+      loading: false,
     }     
   }
 
@@ -58,7 +60,18 @@ class App extends React.Component<{}, IState> {
             />
 
             <div className="container">
-            <Button className="btn btn-primary btn-action btn-add" id="loginButton" variant ="contained" color="primary" onClick= {this.authenticate}>Test</Button>            </div>
+            
+            {!this.state.loading &&
+            <Button className="btn btn-primary btn-action btn-add" id="loginButton" variant ="contained" color="primary" onClick= {this.authenticate}>Test</Button>            
+            }
+
+            {this.state.loading &&
+            <button className="btn btn-primary btn-action btn-add" type="button" disabled>
+              <span className="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true"></span>
+              Loading...
+            </button>
+            }
+            </div>
         
         </div>
 
@@ -130,16 +143,15 @@ class App extends React.Component<{}, IState> {
 						if (this.state.recognitionResult.probability <= 0.8) {
               // alert("Unrecognised, please try again")
               this.setState({
+                loading: false,
                 openFailedDlg: true,
               })
             } else {
-              // this.updateResult;
-              // alert(this.state.recognitionResult.tagName)
-              
-
               this.setState({
+                loading: false,
                 nameLabel: this.state.recognitionResult.tagName,
                 openConfirmDlg: true
+                
                 
               })
 						}
@@ -157,6 +169,9 @@ class App extends React.Component<{}, IState> {
   // }
   
   private authenticate =() => {
+    this.setState({
+      loading: true
+    })
     const screenshot = this.state.refCamera.current.getScreenshot();
 		this.getFaceRecognitionResult(screenshot);
   }
